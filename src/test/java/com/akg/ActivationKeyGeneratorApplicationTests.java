@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @RunWith(SpringRunner.class)
@@ -28,6 +29,9 @@ public class ActivationKeyGeneratorApplicationTests {
 
     @Value("${secret.key}")
     private String secretKey;
+
+    @Value("${file.destination}")
+    private String fileDestination;
 
     @Autowired
     private JwtService jwtService;
@@ -110,5 +114,33 @@ public class ActivationKeyGeneratorApplicationTests {
         } catch (InterruptedException e) {
             Assert.fail(e.getMessage());
         }
+    }
+
+    @Test
+    public void createFileTest() {
+        try {
+            String jwt = jwtService.createJWT(ID, ISSUER, SUBJECT, secretKey, 2000L);
+            jwtService.createFile(jwt, fileDestination);
+        } catch (IOException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void readActivationKeyFileTest() {
+        String jwt = jwtService.readActivationKeyFile(fileDestination);
+        Assert.assertNotNull(jwt);
+    }
+
+    @Test
+    public void creatingAndReadingActivationKeyFileTest() {
+        String jwt = jwtService.createJWT(ID, ISSUER, SUBJECT, secretKey, 2000L);
+        try {
+            jwtService.createFile(jwt, fileDestination);
+        } catch (IOException e) {
+            Assert.fail(e.getMessage());
+        }
+        String jwtReadFromFile = jwtService.readActivationKeyFile(fileDestination);
+        Assert.assertEquals(jwt, jwtReadFromFile);
     }
 }

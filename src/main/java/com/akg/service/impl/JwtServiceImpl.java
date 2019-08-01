@@ -10,6 +10,9 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.Key;
 import java.util.Date;
 
@@ -43,12 +46,32 @@ public class JwtServiceImpl implements JwtService {
             builder.setExpiration(exp);
         }
 
-        return builder.compact();
+        return builder.compact().trim();
     }
 
     @Override
-    public void createFile(String token) {
+    public void createFile(String token, String fileDestination) throws IOException {
+        new File(fileDestination).deleteOnExit();
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileDestination));
+        writer.write(token.trim());
+        writer.close();
+        System.out.println("File created in: " + fileDestination);
+    }
 
+    @Override
+    public String readActivationKeyFile(String fileDestination) {
+        StringBuilder sb = new StringBuilder();
+
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(fileDestination))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            System.err.format("IOException: %s%n", e);
+        }
+
+        return sb.toString().trim();
     }
 
     @Override
