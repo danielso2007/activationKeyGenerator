@@ -2,5 +2,5 @@ language: java
 jdk:
   - oraclejdk11
 script:
-  - export JAVA_HOME=$HOME/openjdk11
+  - export JAVA_HOME=$HOME/home/travis/openjdk11/bin
   - ./mvnw test -Ptest
