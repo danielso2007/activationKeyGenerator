@@ -32,3 +32,5 @@ build/
 .vscode/
 yarn.lock
 node_modules
+target
+target/*
