@@ -4,6 +4,8 @@ import com.akg.lang.SigningKeyInvalidException;
 import com.akg.lang.WorldTimeApi;
 import com.akg.service.JwtService;
 import io.jsonwebtoken.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,11 +21,14 @@ import java.util.Date;
 @Service
 public class JwtServiceImpl implements JwtService {
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtServiceImpl.class);
+
     @Value("${worldtimeapi.url}")
     private String worldtimeapiUrl;
 
     @Override
     public String createJWT(String id, String issuer, String subject, String secretKey, long ttlMillis) {
+        logger.info(String.format("Creating token: %s", id));
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
         long nowMillis = System.currentTimeMillis();
@@ -41,25 +46,30 @@ public class JwtServiceImpl implements JwtService {
 
         // Add the expiration
         if (ttlMillis >= 0) {
+            logger.info(String.format("Adding Expiration Time: %d", ttlMillis));
             long expMillis = nowMillis + ttlMillis;
             Date exp = new Date(expMillis);
             builder.setExpiration(exp);
         }
+
+        logger.info(String.format("Token created: %s", builder.compact().trim()));
 
         return builder.compact().trim();
     }
 
     @Override
     public void createFile(String token, String fileDestination) throws IOException {
+        logger.info("Creating activation key file...");
         new File(fileDestination).deleteOnExit();
         BufferedWriter writer = new BufferedWriter(new FileWriter(fileDestination));
         writer.write(token.trim());
         writer.close();
-        System.out.println("File created in: " + fileDestination);
+        logger.info(String.format("File created in: %s", fileDestination));
     }
 
     @Override
     public String readActivationKeyFile(String fileDestination) {
+        logger.info(String.format("Reading file: %s", fileDestination));
         StringBuilder sb = new StringBuilder();
 
         try (BufferedReader br = Files.newBufferedReader(Paths.get(fileDestination))) {
@@ -68,7 +78,7 @@ public class JwtServiceImpl implements JwtService {
                 sb.append(line).append("\n");
             }
         } catch (IOException e) {
-            System.err.format("IOException: %s%n", e);
+            logger.error(e.getMessage(), e);
         }
 
         return sb.toString().trim();
@@ -76,28 +86,32 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public Claims decodeJWT(String jwt, String secretKey) throws SigningKeyInvalidException, ExpiredJwtException {
+        logger.info("Decode jwt...");
         try {
             Claims claims = Jwts.parser()
                     .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
                     .parseClaimsJws(jwt).getBody();
             return claims;
         } catch (ExpiredJwtException exp) {
+            logger.error(exp.getMessage(), exp);
             throw exp;
         } catch (SignatureException ex) {
+            logger.error(ex.getMessage(), ex);
             throw new SigningKeyInvalidException(ex.getMessage());
         }
     }
 
     @Override
     public boolean checkForWorldTimeAPITokenExpiration(String jwt, String secretKey) {
+        logger.info("Check For WorldTime API Token Expiration...");
         Claims claims = null;
         try {
             claims = decodeJWT(jwt, secretKey);
         } catch (ExpiredJwtException exp) {
-            exp.printStackTrace();
+            logger.error(exp.getMessage(), exp);
             return false;
         } catch (SigningKeyInvalidException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return false;
         }
         if (claims == null) {
@@ -109,6 +123,7 @@ public class JwtServiceImpl implements JwtService {
             WorldTimeApi worldTimeApi = restTemplate.getForObject(worldtimeapiUrl, WorldTimeApi.class);
 
             if (worldTimeApi.getDatetime().after(claims.getExpiration())) {
+                logger.info("Token has expired.");
                 return false;
             }
         } catch (Exception e) {
