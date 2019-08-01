@@ -4,6 +4,5 @@ cache:
     - $HOME/.m2
 jdk:
   - oraclejdk11
-install: mvn external:install
 script:
   - mvn test -Ptest
