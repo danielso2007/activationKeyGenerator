@@ -52,7 +52,7 @@ public class JwtServiceImpl implements JwtService {
             builder.setExpiration(exp);
         }
 
-        logger.info(String.format("Token created: %s", builder.compact().trim()));
+        logger.info(String.format("\nToken created: %s", builder.compact().trim()));
 
         return builder.compact().trim();
     }
@@ -91,12 +91,16 @@ public class JwtServiceImpl implements JwtService {
             Claims claims = Jwts.parser()
                     .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
                     .parseClaimsJws(jwt).getBody();
+            logger.info(String.format("Id: %s", claims.getId()));
+            logger.info(String.format("Issuer: %s", claims.getIssuer()));
+            logger.info(String.format("IssuedAt: %s", claims.getIssuedAt()));
+            logger.info(String.format("Subject: %s", claims.getSubject()));
             return claims;
         } catch (ExpiredJwtException exp) {
-            logger.error(exp.getMessage(), exp);
+            logger.info("Token has expired.");
             throw exp;
         } catch (SignatureException ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.info("Invalid signature key.");
             throw new SigningKeyInvalidException(ex.getMessage());
         }
     }
@@ -108,13 +112,12 @@ public class JwtServiceImpl implements JwtService {
         try {
             claims = decodeJWT(jwt, secretKey);
         } catch (ExpiredJwtException exp) {
-            logger.error(exp.getMessage(), exp);
             return false;
         } catch (SigningKeyInvalidException e) {
-            logger.error(e.getMessage(), e);
             return false;
         }
         if (claims == null) {
+            logger.info("claims is null.");
             return false;
         }
 
@@ -127,9 +130,11 @@ public class JwtServiceImpl implements JwtService {
                 return false;
             }
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return false;
         }
 
+        logger.info("Token not expired.");
         return true;
     }
 }

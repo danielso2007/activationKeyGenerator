@@ -40,29 +40,85 @@ In Run/Debug Configurations.
 
 ### Create a configuration of type Application, and fill in the fields:
 
-- **Name**: Project
-- **Main class**: com.akg.ActivationKeyGeneratorApplication
-- **Working directory**: ~ / activationKeyGenerator (Your project path)
-- **Use classpath of module**: activationKeyGenerator-service
-- **JRE**: 11
-- **Before launch**: Build and Run Maven Goal (clean package)
+- **Name**: `Project`
+- **Main class**: `com.akg.ActivationKeyGeneratorApplication`
+- **Working directory**: `(Your project path)/activationKeyGenerator`
+- **Use classpath of module**: `activationKeyGenerator-service`
+- **JRE**: `11`
+- **Before launch**: `Build and Run Maven Goal (clean package)`
 
 ### Creating Maven Configuration:
 
 ### To run the project:
 
-- **Name**: Run Project
-- **Working directory**: (Your project path) / activationKeyGenerator / activationKeyGenerator-service
-- **Command line**: clean package spring-boot: run
-- **Profiles**: Local
+- **Name**: `Run Project`
+- **Working directory**: `(Your project path)/activationKeyGenerator/activationKeyGenerator-service`
+- **Command line**: `clean package spring-boot: run`
+- **Profiles**: `local`
 
 ### To run project tests:
 
-- **Name**: Run Test
-- **Working directory**: (Your project path) / activationKeyGenerator
-- **Command line**: test
-- **Profiles**: test
+- **Name**: `Run Test`
+- **Working directory**: `(Your project path)/activationKeyGenerator`
+- **Command line**: `test`
+- **Profiles**: `test`
 
+# Running the serviro to reach activation key:
+
+- `createtoken id issuer subject secretykey timeExpiration`
+  - `id`: The token identifier;
+  - `issuer`: The issuer of the token;
+  - `subject`: For whom the token will be created (Suggestion);
+  - `secretyKey`: Secret key to decode this token;
+  - `timeExpiration`: Time, in milliseconds, for token validation.
+  
+Example:
+```shell
+java -jar activationKeyGenerator-service.jar createtoken 123 test me KJASHDKJSAD 2000
+```
+
+- `createfile token filedestination`
+  - `token`: The token that will be inserted into the file;
+  - `fileDestination`: Path where the file will be created.
+
+Example:
+```shell
+java -jar activationKeyGenerator-service.jar KJASGDKHS /home/user/active.key
+```
+
+- `readKeyfile fileDestination`
+  - `fileDestination`: The path to read file only. It will present the content that is inside the file;
+
+Example:
+```shell
+java -jar activationKeyGenerator-service.jar readKeyfile /home/user/active.key
+```
+
+- `decode token secretkey`
+  - `token`: The token that will be decoded;
+  - `secretkey`: The secret key used to encode the token.
+
+Example:
+```shell
+java -jar activationKeyGenerator-service.jar decode KJASHDKJASH TTER5612
+```
+
+- `tokenexpiration token secretkey`
+  - `token`: The token that will be decoded;
+  - `secretkey`: The secret key used to encode the token.
+
+Example:
+```shell
+java -jar activationKeyGenerator-service.jar decode KJASHDKJASH TTER5612
+```
+
+- `help`
+  - Displays some basic command.
+
+Example:
+```shell
+java -jar activationKeyGenerator-service.jar help
+```
 
 # Reference Documentation
 For further reference, please consider the following sections:
