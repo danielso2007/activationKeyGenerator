@@ -1,0 +1,21 @@
+{
+  "name": "activationKeyGenerator",
+  "version": "0.1.0",
+  "description": "activationKeyGenerator",
+  "scripts": {
+    "release": "standard-version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielso2007/activationKeyGenerator.git"
+  },
+  "author": "Daniel Oliveira",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danielso2007/activationKeyGenerator/issues"
+  },
+  "homepage": "https://github.com/danielso2007/activationKeyGenerator#readme",
+  "devDependencies": {
+    "standard-version": "^6.0.1"
+  }
+}
