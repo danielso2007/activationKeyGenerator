@@ -63,7 +63,7 @@ In Run/Debug Configurations.
 - **Command line**: `test`
 - **Profiles**: `test`
 
-# Running the serviro to reach activation key:
+# Running the service to reach activation key:
 
 - `createtoken id issuer subject secretykey timeExpiration`
   - `id`: The token identifier;
