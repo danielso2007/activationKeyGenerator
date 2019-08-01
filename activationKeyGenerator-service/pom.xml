@@ -139,15 +139,15 @@
             </build>
         </profile>
         <profile>
-            <id>homolog</id>
+            <id>test</id>
             <activation>
                 <property>
                     <name>env</name>
-                    <value>hom</value>
+                    <value>test</value>
                 </property>
             </activation>
             <properties>
-                <profile-spring>dev</profile-spring>
+                <profile-spring>test</profile-spring>
             </properties>
             <build>
                 <resources>
@@ -155,7 +155,7 @@
                         <directory>src/main/resources</directory>
                         <filtering>true</filtering>
                         <includes>
-                            <include>**/application.properties</include>
+                            <include>**/application-test.properties</include>
                         </includes>
                         <excludes>
                         </excludes>
