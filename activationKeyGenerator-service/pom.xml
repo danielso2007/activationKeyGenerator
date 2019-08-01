@@ -98,7 +98,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M3</version>
                 <configuration>
-                    <skipTests>false</skipTests>
+                    <skipTests>${skip.tests}</skipTests>
                     <workingDirectory>${project.build.directory}</workingDirectory>
                     <trimStackTrace>false</trimStackTrace>
                     <forkCount>4</forkCount>
@@ -126,6 +126,10 @@
                     <value>local</value>
                 </property>
             </activation>
+            <properties>
+                <spring.profiles.active>dev</spring.profiles.active>
+                <skip.tests>true</skip.tests>
+            </properties>
             <build>
                 <resources>
                     <resource>
@@ -147,7 +151,8 @@
                 </property>
             </activation>
             <properties>
-                <profile-spring>test</profile-spring>
+                <spring.profiles.active>test</spring.profiles.active>
+                <skip.tests>false</skip.tests>
             </properties>
             <build>
                 <resources>
@@ -172,7 +177,8 @@
                 </property>
             </activation>
             <properties>
-                <profile-spring>prod</profile-spring>
+                <spring.profiles.active>prod</spring.profiles.active>
+                <skip.tests>false</skip.tests>
             </properties>
             <build>
                 <resources>
