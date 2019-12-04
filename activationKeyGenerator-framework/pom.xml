@@ -5,12 +5,12 @@
     <parent>
         <groupId>com.akg</groupId>
         <artifactId>activationKeyGenerator</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.1.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>com.akg</groupId>
     <artifactId>activationKeyGenerator-framework</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <name>Framework</name>
     <description>Framework for activation key verification in your application.</description>
 
