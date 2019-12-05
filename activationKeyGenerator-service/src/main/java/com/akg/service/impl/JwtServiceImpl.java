@@ -68,7 +68,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String readActivationKeyFile(String fileDestination) {
+    public String readActivationKeyFile(String fileDestination) throws FileNotFoundException {
         logger.info(String.format("Reading file: %s", fileDestination));
         StringBuilder sb = new StringBuilder();
 
@@ -79,6 +79,7 @@ public class JwtServiceImpl implements JwtService {
             }
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
+            throw new FileNotFoundException();
         }
 
         return sb.toString().trim();
@@ -131,7 +132,11 @@ public class JwtServiceImpl implements JwtService {
             }
         } catch (Exception e) {
             logger.info(e.getMessage());
-            return false;
+            Date date =  new Date();
+            if (date.after(claims.getExpiration())) {
+                logger.info("Token has expired.");
+                return false;
+            }
         }
 
         logger.info("Token not expired.");

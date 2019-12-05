@@ -17,8 +17,8 @@
     </properties>
 
     <modules>
-        <module>activationKeyGenerator-service</module>
         <module>activationKeyGenerator-framework</module>
+        <module>activationKeyGenerator-service</module>
     </modules>
 
     <build>

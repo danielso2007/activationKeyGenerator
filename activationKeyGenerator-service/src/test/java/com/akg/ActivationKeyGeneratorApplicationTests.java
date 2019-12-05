@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -37,11 +38,11 @@ public class ActivationKeyGeneratorApplicationTests {
     private JwtService jwtService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
     }
 
     @Test
@@ -57,10 +58,7 @@ public class ActivationKeyGeneratorApplicationTests {
         Assert.assertNotNull(token);
         try {
             claims = jwtService.decodeJWT(token, secretKey);
-        } catch (SigningKeyInvalidException e) {
-            e.printStackTrace();
-            Assert.fail(e.getMessage());
-        } catch (ExpiredJwtException e) {
+        } catch (SigningKeyInvalidException | ExpiredJwtException e) {
             e.printStackTrace();
             Assert.fail(e.getMessage());
         }
@@ -100,8 +98,9 @@ public class ActivationKeyGeneratorApplicationTests {
 
     @Test
     public void checkForWorldTimeAPITokenExpirationTest() {
-        boolean check = jwtService.checkForWorldTimeAPITokenExpiration(jwtService.createJWT(ID, ISSUER, SUBJECT, secretKey, 10000L), secretKey);
-        Assert.assertTrue(check);
+        String secretKey = "KJAHSKJDHKJASHDKJAS";
+        String jwt = jwtService.createJWT(ID, ISSUER, SUBJECT, secretKey, 10000L);
+        Assert.assertTrue(jwtService.checkForWorldTimeAPITokenExpiration(jwt, secretKey));
     }
 
     @Test
@@ -128,7 +127,13 @@ public class ActivationKeyGeneratorApplicationTests {
 
     @Test
     public void readActivationKeyFileTest() {
-        String jwt = jwtService.readActivationKeyFile(fileDestination);
+        String jwt = null;
+        try {
+            jwt = jwtService.readActivationKeyFile(fileDestination);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
         Assert.assertNotNull(jwt);
     }
 
@@ -140,7 +145,13 @@ public class ActivationKeyGeneratorApplicationTests {
         } catch (IOException e) {
             Assert.fail(e.getMessage());
         }
-        String jwtReadFromFile = jwtService.readActivationKeyFile(fileDestination);
+        String jwtReadFromFile = null;
+        try {
+            jwtReadFromFile = jwtService.readActivationKeyFile(fileDestination);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
         Assert.assertEquals(jwt, jwtReadFromFile);
     }
 }

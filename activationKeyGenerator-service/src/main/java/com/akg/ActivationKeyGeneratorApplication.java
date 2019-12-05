@@ -8,6 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @SpringBootApplication
@@ -52,7 +53,11 @@ public class ActivationKeyGeneratorApplication {
 				case "readKeyfile":
 					logger.info("File Reading...");
 					if (args.length == 2) {
-						jwtService.readActivationKeyFile(args[1]);
+						try {
+							jwtService.readActivationKeyFile(args[1]);
+						} catch (FileNotFoundException e) {
+							logger.error(e.getMessage());
+						}
 					} else {
 						logger.error("\nTo read the file, 1 parameter is required:\n" +
 								"fileDestination: The location of the file.");
